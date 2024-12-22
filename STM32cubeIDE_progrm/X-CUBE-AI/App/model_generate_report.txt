@@ -1,0 +1,162 @@
+ST Edge AI Core v1.0.0-19895
+Created date          : 2024-12-07 14:45:44
+Parameters            : generate --target stm32f4 --name model -m /home/skander/Bureau/model-created_nsb/dnn_model.tflite --compression none --verbosity 1 --allocate-inputs --allocate-outputs --workspace /tmp/mxAI_workspace1133310717910016176492775986026241 --output /home/skander/.stm32cubemx/model_output
+
+Exec/report summary (generate)
+--------------------------------------------------------------------------------------------
+model file         :   /home/skander/Bureau/model-created_nsb/dnn_model.tflite              
+type               :   tflite                                                               
+c_name             :   model                                                                
+compression        :   none                                                                 
+options            :   allocate-inputs, allocate-outputs                                    
+optimization       :   balanced                                                             
+target/series      :   stm32f4                                                              
+workspace dir      :   /tmp/mxAI_workspace1133310717910016176492775986026241                
+output dir         :   /home/skander/.stm32cubemx/model_output                              
+model_fmt          :   float                                                                
+model_name         :   dnn_model                                                            
+model_hash         :   0xa611d9c9dabc2d10bc30fcc869c107de                                   
+params #           :   9,093 items (11.52 KiB)                                              
+--------------------------------------------------------------------------------------------
+input 1/1          :   'serving_default_keras_tensor_60', f32(1x3), 12 Bytes, activations   
+output 1/1         :   'nl_3', f32(1x5), 20 Bytes, activations                              
+macc               :   9,360                                                                
+weights (ro)       :   36,372 B (35.52 KiB) (1 segment)                                     
+activations (rw)   :   768 B (768 B) (1 segment) *                                          
+ram (total)        :   768 B (768 B) = 768 + 0 + 0                                          
+--------------------------------------------------------------------------------------------
+(*) 'input'/'output' buffers can be used from the activations buffer
+
+Model name - dnn_model
+------ ------------------------------------------- -------------- ------------- ------- --------------------------------- --- ------------------ ----------------- ---------------------------- 
+m_id   layer (type,original)                       oshape         param/size       macc                      connected to   | c_size             c_macc            c_type                       
+------ ------------------------------------------- -------------- ------------- ------- --------------------------------- --- ------------------ ----------------- ---------------------------- 
+0      serving_default_keras_tensor_60 (Input, )   [b:1,c:3]                                                                | +2,048(+100.0%)    +640(+100.0%)     Dense_/Nonlinearity_[0, 1]   
+       arith_constant (Placeholder, )              [h:128,c:3]    384/1,536                                                 | -1,536(-100.0%)                      
+       arith_constant1 (Placeholder, )             [c:128]        128/512                                                   | -512(-100.0%)                        
+       gemm_0 (Gemm, FULLY_CONNECTED)              [b:1,c:128]                      512   serving_default_keras_tensor_60   |                    -512(-100.0%)     
+                                                                                                           arith_constant   | 
+                                                                                                          arith_constant1   | 
+       nl_0_nl (Nonlinearity, FULLY_CONNECTED)     [b:1,c:128]                      128                            gemm_0   |                    -128(-100.0%)     
+------ ------------------------------------------- -------------- ------------- ------- --------------------------------- --- ------------------ ----------------- ---------------------------- 
+1      tfl_pseudo_qconst (Placeholder, )           [h:64,c:128]   8,192/8,192                                               | +24,832(+303.1%)   +8,320(+100.0%)   Dense_/Nonlinearity_[2, 3]   
+       arith_constant2 (Placeholder, )             [c:64]         64/256                                                    | -256(-100.0%)                        
+       gemm_1 (Gemm, FULLY_CONNECTED)              [b:1,c:64]                     8,256                           nl_0_nl   |                    -8,256(-100.0%)   
+                                                                                                        tfl_pseudo_qconst   | 
+                                                                                                          arith_constant2   | 
+       nl_1_nl (Nonlinearity, FULLY_CONNECTED)     [b:1,c:64]                        64                            gemm_1   |                    -64(-100.0%)      
+------ ------------------------------------------- -------------- ------------- ------- --------------------------------- --- ------------------ ----------------- ---------------------------- 
+2      arith_constant4 (Placeholder, )             [h:5,c:64]     320/1,280                                                 | +20(+1.6%)         +325(+100.0%)     Dense_[4]                    
+       arith_constant3 (Placeholder, )             [c:5]          5/20                                                      | -20(-100.0%)                         
+       gemm_2 (Gemm, FULLY_CONNECTED)              [b:1,c:5]                        325                           nl_1_nl   |                    -325(-100.0%)     
+                                                                                                          arith_constant4   | 
+                                                                                                          arith_constant3   | 
+------ ------------------------------------------- -------------- ------------- ------- --------------------------------- --- ------------------ ----------------- ---------------------------- 
+3      nl_3 (Nonlinearity, SOFTMAX)                [b:1,c:5]                         75                            gemm_2   |                                      Nonlinearity_[o][5]          
+------ ------------------------------------------- -------------- ------------- ------- --------------------------------- --- ------------------ ----------------- ---------------------------- 
+model/c-model: macc=9,360/9,360  weights=11,796/36,372 +24,576(+208.3%) activations=--/768 io=--/0
+
+
+
+Generated C-graph summary
+------------------------------------------------------------------------------------------------------------------------
+model name            : dnn_model
+c-name                : model
+c-node #              : 6
+c-array #             : 13
+activations size      : 768 (1 segment)
+weights size          : 36372 (1 segment)
+macc                  : 9360
+inputs                : ['serving_default_keras_tensor_60_output']
+outputs               : ['nl_3_output']
+
+C-Arrays (13)
+------ ---------------------------------------- ------------ ------------------------- ------------- --------- 
+c_id   name (*_array)                           item/size    domain/mem-pool           c-type        comment   
+------ ---------------------------------------- ------------ ------------------------- ------------- --------- 
+0      gemm_0_bias                              128/512      weights/weights           const float             
+1      gemm_0_output                            128/512      activations/**default**   float                   
+2      gemm_0_weights                           384/1536     weights/weights           const float             
+3      gemm_1_bias                              64/256       weights/weights           const float             
+4      gemm_1_output                            64/256       activations/**default**   float                   
+5      gemm_1_weights                           8192/32768   weights/weights           const float             
+6      gemm_2_bias                              5/20         weights/weights           const float             
+7      gemm_2_output                            5/20         activations/**default**   float                   
+8      gemm_2_weights                           320/1280     weights/weights           const float             
+9      nl_0_nl_output                           128/512      activations/**default**   float                   
+10     nl_1_nl_output                           64/256       activations/**default**   float                   
+11     nl_3_output                              5/20         activations/**default**   float         /output   
+12     serving_default_keras_tensor_60_output   3/12         activations/**default**   float         /input    
+------ ---------------------------------------- ------------ ------------------------- ------------- --------- 
+
+C-Layers (6)
+------ ---------------- ---- --------------- ------ ------- ------------------------------------------- ------------------ 
+c_id   name (*_layer)   id   layer_type      macc   rom     tensors                                     shape (array id)   
+------ ---------------- ---- --------------- ------ ------- ------------------------------------------- ------------------ 
+0      gemm_0           0    Dense           512    2048    I: serving_default_keras_tensor_60_output   f32(1x3) (12)      
+                                                            W: gemm_0_weights                           f32(128x3) (2)     
+                                                            W: gemm_0_bias                              f32(128) (0)       
+                                                            O: gemm_0_output                            f32(1x128) (1)     
+------ ---------------- ---- --------------- ------ ------- ------------------------------------------- ------------------ 
+1      nl_0_nl          0    Nonlinearity    128    0       I: gemm_0_output                            f32(1x128) (1)     
+                                                            O: nl_0_nl_output                           f32(1x128) (9)     
+------ ---------------- ---- --------------- ------ ------- ------------------------------------------- ------------------ 
+2      gemm_1           1    Dense           8256   33024   I: nl_0_nl_output                           f32(1x128) (9)     
+                                                            W: gemm_1_weights                           f32(64x128) (5)    
+                                                            W: gemm_1_bias                              f32(64) (3)        
+                                                            O: gemm_1_output                            f32(1x64) (4)      
+------ ---------------- ---- --------------- ------ ------- ------------------------------------------- ------------------ 
+3      nl_1_nl          1    Nonlinearity    64     0       I: gemm_1_output                            f32(1x64) (4)      
+                                                            O: nl_1_nl_output                           f32(1x64) (10)     
+------ ---------------- ---- --------------- ------ ------- ------------------------------------------- ------------------ 
+4      gemm_2           2    Dense           325    1300    I: nl_1_nl_output                           f32(1x64) (10)     
+                                                            W: gemm_2_weights                           f32(5x64) (8)      
+                                                            W: gemm_2_bias                              f32(5) (6)         
+                                                            O: gemm_2_output                            f32(1x5) (7)       
+------ ---------------- ---- --------------- ------ ------- ------------------------------------------- ------------------ 
+5      nl_3             3    Nonlinearity    75     0       I: gemm_2_output                            f32(1x5) (7)       
+                                                            O: nl_3_output                              f32(1x5) (11)      
+------ ---------------- ---- --------------- ------ ------- ------------------------------------------- ------------------ 
+
+
+
+Number of operations per c-layer
+------- ------ ------------------------ ------- -------------- 
+c_id    m_id   name (type)                  #op           type 
+------- ------ ------------------------ ------- -------------- 
+0       0      gemm_0 (Dense)               512   smul_f32_f32 
+1       0      nl_0_nl (Nonlinearity)       128     op_f32_f32 
+2       1      gemm_1 (Dense)             8,256   smul_f32_f32 
+3       1      nl_1_nl (Nonlinearity)        64     op_f32_f32 
+4       2      gemm_2 (Dense)               325   smul_f32_f32 
+5       3      nl_3 (Nonlinearity)           75     op_f32_f32 
+------- ------ ------------------------ ------- -------------- 
+total                                     9,360 
+
+Number of operation types
+---------------- ------- ----------- 
+operation type         #           % 
+---------------- ------- ----------- 
+smul_f32_f32       9,093       97.1% 
+op_f32_f32           267        2.9% 
+
+Complexity report (model)
+------ --------------------------------- ------------------------- ------------------------- -------- 
+m_id   name                              c_macc                    c_rom                     c_id     
+------ --------------------------------- ------------------------- ------------------------- -------- 
+0      serving_default_keras_tensor_60   ||                 6.8%   |                  5.6%   [0, 1]   
+1      tfl_pseudo_qconst                 ||||||||||||||||  88.9%   ||||||||||||||||  90.8%   [2, 3]   
+2      arith_constant4                   |                  3.5%   |                  3.6%   [4]      
+3      nl_3                              |                  0.8%   |                  0.0%   [5]      
+------ --------------------------------- ------------------------- ------------------------- -------- 
+macc=9,360 weights=36,372 act=768 ram_io=0
+
+Generated files (7)
+------------------------------------------------------------- 
+/home/skander/.stm32cubemx/model_output/model_data_params.h   
+/home/skander/.stm32cubemx/model_output/model_data_params.c   
+/home/skander/.stm32cubemx/model_output/model_data.h          
+/home/skander/.stm32cubemx/model_output/model_data.c          
+/home/skander/.stm32cubemx/model_output/model_config.h        
+/home/skander/.stm32cubemx/model_output/model.h               
+/home/skander/.stm32cubemx/model_output/model.c               
